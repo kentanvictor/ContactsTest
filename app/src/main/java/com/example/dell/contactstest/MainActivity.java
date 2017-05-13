@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -38,9 +39,31 @@ public class MainActivity extends AppCompatActivity {
         try
         {
             //查询联系人数据
+            cursor = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,null,null,null,null);
+            if(cursor != null)
+            {
+                while(cursor.moveToNext())
+                {
+                    //获取联系人姓名
+                    String displayName = cursor.getString(cursor.getColumnIndex
+                            (ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
+                    //获取联系人手机号
+                    String number = cursor.getString(cursor.getColumnIndex
+                            (ContactsContract.CommonDataKinds.Phone.NUMBER));
+                    contactsList.add(displayName + "\n" + number);
+                }
+                adapter.notifyDataSetChanged();
+            }
         }catch (Exception e)
         {
             cursor.close();
+        }
+        finally
+        {
+            if(cursor != null)
+            {
+                cursor.close();
+            }
         }
     }
 }
